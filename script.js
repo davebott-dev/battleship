@@ -127,9 +127,9 @@ class Gameboard {
   
   
   
-  
+  const content = document.getElementById('content');
   const grid = document.querySelector(".container");
-  const grid2 = document.querySelector(".container2");
+
   
   const carrierBtn = document.getElementById("carrierBtn");
   const battleshipBtn = document.getElementById("battleshipBtn");
@@ -139,7 +139,7 @@ class Gameboard {
   const rotateBtn = document.getElementById("rotateBtn");
   const resetBtn = document.getElementById("resetBtn");
   const continueBtn = document.getElementById('continueBtn');
-  const compGB = document.getElementById('compGB');
+  const message = document.getElementById('message');
   resetBtn.disabled = true;
   rotateBtn.disabled = true;
   continueBtn.disabled = true;
@@ -157,6 +157,25 @@ class Gameboard {
       }
     }
   }
+
+  const makeCompGrid = () => {
+    const compGrid = document.createElement('div');
+    compGrid.id = "compGB";
+    content.appendChild(compGrid);
+    
+
+
+    let count = 0;
+    for (let i = 0; i < 10; i++) {
+      for (let j = 0; j < 10; j++) {
+        const compCell = document.createElement("div");
+        compCell.classList.add(count++);
+        compCell.classList.add("cell");
+        compGrid.appendChild(compCell);
+  
+      }
+    }
+  }
   
   makeGrid();
   
@@ -166,9 +185,13 @@ class Gameboard {
   let cruiserBtnClicked = false;
   let submarineBtnClicked = false;
   let destroyerBtnClicked = false;
+  let continueBtnClicked = false;
   var arr = []
   
-  
+const text = document.createElement('p');
+  text.textContent = "Place your ships:";
+  message.appendChild(text);
+
   
   carrierBtn.addEventListener("click", () => {
     rotateBtn.disabled = false;
@@ -189,6 +212,8 @@ class Gameboard {
   
     cell.forEach((element) => {
       element.addEventListener("mouseover", () => {
+
+
         if (element.classList[0] < 60 && !element.classList.contains('horizontal')) {
           element.style.backgroundColor = "green";
   
@@ -395,23 +420,14 @@ class Gameboard {
           element.style.backgroundColor = "red";
         }
 
-        if (element.classList.contains('highlighted')) {
-            element.style.backgroundColor = "red";
-            
-            cell.forEach((innerElement) => {
-                if (element.style.backgroundColor =="red") {
-                    if(innerElement.style.backgroundColor == "green") {
-                        innerElement.style.backgroundColor = "red"
-                    }
-                }
-            })
-        }
-        if (element.style.backgroundColor == "green") {
+
+        if (element.style.backgroundColor == "green"||
+          element.style.backgroundColor == "red" ) {
             cell.forEach((innerElement) => {
                 if (innerElement.style.backgroundColor =="green") {
-                    if(innerElement.classList.contains('highlighted')) {
+                    if(innerElement.classList.contains('highlighted')||
+                  element.classList.contains('highlighted')) {
                         element.style.backgroundColor = "red";
-                        
                         cell.forEach((innestElement) => {
                             if(innestElement.style.backgroundColor == "green") {
                                 innestElement.style.backgroundColor = "red";
@@ -1123,6 +1139,7 @@ class Gameboard {
     cruiserBtn.disabled = false;
     submarineBtn.disabled = false;
     destroyerBtn.disabled = false;
+    continueBtnClicked = false;
     resetBtn.disabled = true;
     arr = [];
     console.log(arr.length)
@@ -1192,15 +1209,69 @@ class Gameboard {
     } else {
       continueBtn.disabled = true;
     }
+    if (continueBtnClicked == true) {
+      continueBtn.disabled = true;
+    }
+
   })
   
   continueBtn.addEventListener("click", () => {
-    //create the code for appending a new gameboard to the right of it
-    console.log('it works')
+
+    continueBtnClicked = true;
+    resetBtn.disabled = true;
+
+    text.textContent = 'Choose your Target!';
+    text.style.color  = "red";
+
+    makeCompGrid();
+
   })
+    
   
-  
-  //addd the code to make it so that you cannot place ships on top of ships 
-  //when continue is clicked append the computers gameboard and start the game
-  
-  
+
+   const compSelection = () => {
+    
+    for(let i=0;i<6;i++) {
+      let select = Math.floor(Math.random()*101);
+
+      if(i ==1) {
+        let carrierChoicesVertical= [select,select+10,select+20,select+30,select+40];
+        let carrierChoicesHorizontal = [select,select+1,select+2,select+3,select+4]
+
+        var carrierOrientationArr = [carrierChoicesVertical,carrierChoicesHorizontal];
+        
+      }
+      if(i ==2) {
+        let battleshipChoicesVertical= [select,select+10,select+20,select+30];
+        let battleshipChoicesHorizontal = [select,select+1,select+2,select+3]
+
+        var battleshipOrientationArr = [battleshipChoicesHorizontal,battleshipChoicesVertical];
+      }
+      if(i ==3) {
+        let cruiserChoicesVertical= [select,select+10,select+20];
+        let cruiserChoicesHorizontal = [select,select+1,select+2]
+
+        var cruiserOrientationArr = [cruiserChoicesHorizontal,cruiserChoicesVertical];
+      }
+      if(i ==4) {
+        let submarineChoicesVertical= [select,select+10,select+20];
+        let submarineChoicesHorizontal = [select,select+1,select+2]
+
+        var submarineOrientationArr = [submarineChoicesHorizontal,submarineChoicesVertical];
+      }
+      if(i ==5) {
+        let destroyerChoicesVertical= [select,select+10];
+        let destroyerChoicesHorizontal = [select,select+1]
+
+        var destroyerOrientationArr = [destroyerChoicesHorizontal,destroyerChoicesVertical];
+      }
+    }
+    console.log(carrierOrientationArr[Math.floor(Math.random()*2)]);
+    console.log(battleshipOrientationArr[Math.floor(Math.random()*2)]);
+    console.log(cruiserOrientationArr[Math.floor(Math.random()*2)]);
+    console.log(submarineOrientationArr[Math.floor(Math.random()*2)]);
+    console.log(destroyerOrientationArr[Math.floor(Math.random()*2)]);
+
+
+
+   }
