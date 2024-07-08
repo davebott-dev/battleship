@@ -1,14 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Battle Ship</title>
-    <link href="style.css" rel="stylesheet" type="text/css"/>
-</head>
-<body>
-    
 
-    <script src="script.js"></script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Battle Ship</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <h1>NAVAL WARFARE</h1>
+  <div id="content">
+    <p>Place your ships:</p>
+
+    <div id="gameboard">
+
+      <div class="container"></div>
+
+      <div id="gameboardBtns">
+        <div id="ships">
+          <button class="btn" id="carrierBtn">Carrier (5)</button>
+          <button class="btn" id="battleshipBtn">Battleship (4)</button>
+          <button class="btn" id="cruiserBtn">Cruiser (3)</button>
+          <button class="btn" id="submarineBtn">Submarine (3)</button>
+          <button class="btn" id="destroyerBtn">Destroyer (2)</button>
+        </div>
+        <div id="settings">
+          <button class="btn" id="rotateBtn">Rotate</button>
+          <button class="btn" id="resetBtn">Reset</button>
+        </div>
+
+
+      </div>
+
+
+
+    </div>
+    <button class="btn" id="continueBtn">Continue</button>
+
+
+    <div id="compGB"> </div>
+
+  </div>
+
+
+
+
+  <script src="script.js"></script>
 </body>
+
 </html>
