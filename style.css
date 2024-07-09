@@ -38,7 +38,7 @@ p {
 
 .cell:hover,
 .compCell:hover {
-  background: #6483aa;
+  background: #7d8fa5;
 }
 
 body {
@@ -58,8 +58,6 @@ body {
   justify-content: center;
   width: 100%;
   height: 100%;
-
-
 }
 
 #gameboard {
@@ -67,7 +65,6 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
 }
 
 #gameboardBtns {
@@ -103,3 +100,14 @@ body {
 .disabled {
   pointer-events: none;
 }
+
+#compArea {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 26px;
+}
+
+
+
