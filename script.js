@@ -61,6 +61,20 @@ let submarineBtnClicked = false;
 let destroyerBtnClicked = false;
 let continueBtnClicked = false;
 var arr = [];
+var compMoveMissArr = [];
+var compMoveHitArr = [];
+var compChoiceArr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
+80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+90, 91, 92, 93, 94, 95, 96, 97, 98, 99];
+
+
 
 const text = document.createElement("p");
 text.textContent = "Place your ships:";
@@ -1558,7 +1572,6 @@ const compSelection = () => {
         continueBtnClicked = false;
         resetBtn.disabled = true;
         arr = [];
-        console.log(arr.length);
       }
     });
   });
@@ -1569,58 +1582,76 @@ const compSelection = () => {
   console.log(submarineChoice);
   console.log(destroyerChoice);
 
-  function compMove() {
-    let choice = Math.floor(Math.random() * 101);
-    let playerArr = [];
 
-    cell.forEach((element) => {
-      if (
-        element.classList.contains(choice) &&
-        element.classList.contains("highlighted")
-      ) {
-        element.style.backgroundColor = "red";
-        text.textContent = "Boom! Your ship was hit.";
-        text.style.color = "red";
-        if (!playerArr.includes(Number(element.classList[0]))) {
-          playerArr.push(element.classList[0]);
-          console.log(playerArr);
-        }
-      }
-    });
 
-    cell.forEach((element) => {
-      if (
-        element.classList.contains(choice) &&
-        !element.classList.contains("highlighted")
-      ) {
-        element.style.backgroundColor = "#8998ac";
-        text.textContent = "Miss";
-        text.style.color = "#ececec";
-      }
-    });
 
-    if (playerArr == 17) {
-      alert("you lose");
-      content.removeChild(compArea);
-      text.textContent = "Place your ships:";
-      text.style.color = "#ececec";
 
-      cell.forEach((element) => {
-        element.classList.remove("disabled");
-        element.style.backgroundColor = "";
-        if (element.classList.contains("highlighted")) {
-          element.classList.remove("highlighted");
-        }
-      });
-      carrierBtn.disabled = false;
-      battleshipBtn.disabled = false;
-      cruiserBtn.disabled = false;
-      submarineBtn.disabled = false;
-      destroyerBtn.disabled = false;
-      continueBtnClicked = false;
-      resetBtn.disabled = true;
-      arr = [];
-      console.log(arr.length);
-    }
-  }
+
+
+
 };
+
+//figure out how to prevent the computer from placing ships on top of ships
+
+
+function compMove() {
+
+  var length = compChoiceArr.length
+  var compChoice = compChoiceArr[Math.floor(Math.random() * length)];
+  const compArea = document.getElementById("compArea");
+
+cell.forEach((element)=> {
+   
+    if(element.classList.contains(compChoice) &&
+    !element.classList.contains('highlighted')) {
+      compMoveMissArr.push(compChoiceArr.splice(compChoiceArr.indexOf(compChoice), 1));
+      element.style.backgroundColor = "#8998ac";
+      text.textContent = "Miss";
+      text.style.color = "#ececec";
+    } else if (element.classList.contains(compChoice) &&
+    element.classList.contains('highlighted')) {
+      compMoveHitArr.push(compChoiceArr.splice(compChoiceArr.indexOf(compChoice), 1));
+      element.style.backgroundColor = "red";
+      text.textContent = "Boom! Your ship was hit.";
+      text.style.color = "red";
+    }
+
+
+})
+
+
+  if (compMoveHitArr.length == 17) {
+    alert("you lose");
+    content.removeChild(compArea);
+    text.textContent = "Place your ships:";
+    text.style.color = "#ececec";
+
+    cell.forEach((element) => {
+      element.classList.remove("disabled");
+      element.style.backgroundColor = "";
+      if (element.classList.contains("highlighted")) {
+        element.classList.remove("highlighted");
+      }
+    });
+    carrierBtn.disabled = false;
+    battleshipBtn.disabled = false;
+    cruiserBtn.disabled = false;
+    submarineBtn.disabled = false;
+    destroyerBtn.disabled = false;
+    continueBtnClicked = false;
+    resetBtn.disabled = true;
+    arr = [];
+     compMoveMissArr = [];
+     compMoveHitArr = [];
+     compChoiceArr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+    10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+    20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+    30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+    40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+    50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+    60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+    70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
+    80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+    90, 91, 92, 93, 94, 95, 96, 97, 98, 99]; 
+   }
+}
