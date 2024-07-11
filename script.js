@@ -74,6 +74,26 @@ var compChoiceArr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
 80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
 90, 91, 92, 93, 94, 95, 96, 97, 98, 99];
 
+let carrierArr = []
+let battleshipArr = []
+let cruiserArr = []
+let submarineArr = []
+let destroyerArr = []
+
+let compsChoicesArr = [
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+  10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+  20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+  30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+  40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+  50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+  60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+  70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
+  80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+  90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+];
+let coinTossArr = [0, 1];
+
 
 
 const text = document.createElement("p");
@@ -1312,180 +1332,108 @@ continueBtn.addEventListener("click", () => {
   makeCompGrid();
 });
 
-//add an event listener to the computers grid that when I click a cell it appends a message
-//whether or not I hit their ship and makes that space red...if not append miss
-//also code in the game flow...after I make a move the computer randomly selects a slot
-//on my board
-
 const compSelection = () => {
-  for (let i = 0; i < 6; i++) {
-    if (i == 1) {
-      var carrierSelect = Math.floor(Math.random() * 59);
-      let carrierChoicesVertical = [
-        carrierSelect,
-        carrierSelect + 10,
-        carrierSelect + 20,
-        carrierSelect + 30,
-        carrierSelect + 40,
-      ];
-      let carrierChoicesHorizontal = [
-        carrierSelect,
-        carrierSelect + 1,
-        carrierSelect + 2,
-        carrierSelect + 3,
-        carrierSelect + 4,
-      ];
+  for (let i = 0; i < 5; i++) {
+    var coinToss = Math.floor(Math.random() * 2);
+    let result = coinTossArr[coinToss];
 
-      var carrierOrientationArr = [
-        carrierChoicesVertical,
-        carrierChoicesHorizontal,
-      ];
-    }
-    if (i == 2) {
+    if (i == 0) {
+      var carrierSelect = Math.floor(Math.random() * 59);
+      carrierArr.push(carrierSelect)
+      delete compsChoicesArr[carrierSelect]
+
+      for (let i = 0; i < 4; i++) {
+        if (result == 0) {
+          let carrierNext = carrierSelect += 10;
+          carrierArr.push(carrierNext)
+          delete compsChoicesArr[carrierNext]
+        } else {
+          let carrierNext = carrierSelect += 1;
+          carrierArr.push(carrierNext)
+          delete compsChoicesArr[carrierNext]
+        }
+      }
+    } else if (i == 1) {
       var battleshipSelect = Math.floor(Math.random() * 69);
-      if (
-        battleshipSelect == carrierSelect ||
-        battleshipSelect + 40 == carrierSelect ||
-        battleshipSelect + 40 == carrierSelect + 1 ||
-        battleshipSelect + 40 == carrierSelect + 2 ||
-        battleshipSelect + 40 == carrierSelect + 3 ||
-        battleshipSelect + 40 == carrierSelect + 4
-      ) {
+      while (!compsChoicesArr.includes(battleshipSelect)) {
         battleshipSelect = Math.floor(Math.random() * 69);
       }
-      let battleshipChoicesVertical = [
-        battleshipSelect,
-        battleshipSelect + 10,
-        battleshipSelect + 20,
-        battleshipSelect + 30,
-      ];
-      let battleshipChoicesHorizontal = [
-        battleshipSelect,
-        battleshipSelect + 1,
-        battleshipSelect + 2,
-        battleshipSelect + 3,
-      ];
-
-      var battleshipOrientationArr = [
-        battleshipChoicesHorizontal,
-        battleshipChoicesVertical,
-      ];
-    }
-    if (i == 3) {
+      battleshipArr.push(battleshipSelect);
+      delete compsChoicesArr[battleshipSelect];
+      for (let i = 0; i < 3; i++) {
+        if (result == 0) {
+          let battleshipNext = battleshipSelect += 10;
+          battleshipArr.push(battleshipNext);
+          delete compsChoicesArr[battleshipNext];
+        } else {
+          let battleshipNext = battleshipSelect += 1;
+          battleshipArr.push(battleshipNext);
+          delete compsChoicesArr[battleshipNext];
+        }
+      }
+    } else if (i == 2) {
       var cruiserSelect = Math.floor(Math.random() * 79);
-      if (
-        cruiserSelect == battleshipSelect ||
-        cruiserSelect == carrierSelect ||
-        cruiserSelect + 30 == carrierSelect ||
-        battleshipSelect + 30 == carrierSelect + 1 ||
-        battleshipSelect + 30 == carrierSelect + 2 ||
-        battleshipSelect + 30 == carrierSelect + 3 ||
-        battleshipSelect + 30 == carrierSelect + 4 ||
-        cruiserSelect + 30 == battleshipSelect ||
-        cruiserSelect + 30 == battleshipSelect + 1 ||
-        cruiserSelect + 30 == battleshipSelect + 2 ||
-        cruiserSelect + 30 == battleshipSelect + 3
-      ) {
+      while (!compsChoicesArr.includes(cruiserSelect)) {
         cruiserSelect = Math.floor(Math.random() * 79);
       }
+      cruiserArr.push(cruiserSelect);
+      delete compsChoicesArr[cruiserSelect];
+      for (let i = 0; i < 2; i++) {
+        if (result == 0) {
+          let cruiserNext = cruiserSelect += 10;
+          cruiserArr.push(cruiserNext);
+          delete compsChoicesArr[cruiserNext];
+        } else {
+          let cruiserNext = cruiserSelect += 1;
+          cruiserArr.push(cruiserNext);
+          delete compsChoicesArr[cruiserNext];
+        }
+      }
 
-      let cruiserChoicesVertical = [
-        cruiserSelect,
-        cruiserSelect + 10,
-        cruiserSelect + 20,
-      ];
-      let cruiserChoicesHorizontal = [
-        cruiserSelect,
-        cruiserSelect + 1,
-        cruiserSelect + 2,
-      ];
-
-      var cruiserOrientationArr = [
-        cruiserChoicesHorizontal,
-        cruiserChoicesVertical,
-      ];
-    }
-    if (i == 4) {
+    } else if (i == 3) {
       var submarineSelect = Math.floor(Math.random() * 79);
-      if (
-        submarineSelect == cruiserSelect ||
-        submarineSelect == battleshipSelect ||
-        submarineSelect == carrierSelect ||
-        submarineSelect + 30 == carrierSelect ||
-        submarineSelect + 30 == carrierSelect + 1 ||
-        submarineSelect + 30 == carrierSelect + 2 ||
-        submarineSelect + 30 == carrierSelect + 3 ||
-        submarineSelect + 30 == carrierSelect + 4 ||
-        submarineSelect + 30 == battleshipSelect ||
-        submarineSelect + 30 == battleshipSelect + 1 ||
-        submarineSelect + 30 == battleshipSelect + 2 ||
-        submarineSelect + 30 == battleshipSelect + 3 ||
-        submarineSelect + 30 == cruiserSelect ||
-        submarineSelect + 30 == cruiserSelect + 1 ||
-        submarineSelect + 30 == cruiserSelect + 2
-      ) {
+      while (!compsChoicesArr.includes(submarineSelect)) {
         submarineSelect = Math.floor(Math.random() * 79);
       }
-
-      let submarineChoicesVertical = [
-        submarineSelect,
-        submarineSelect + 10,
-        submarineSelect + 20,
-      ];
-      let submarineChoicesHorizontal = [
-        submarineSelect,
-        submarineSelect + 1,
-        submarineSelect + 2,
-      ];
-
-      var submarineOrientationArr = [
-        submarineChoicesHorizontal,
-        submarineChoicesVertical,
-      ];
-    }
-    if (i == 5) {
-      var destroyerSelect = Math.floor(Math.random() * 89);
-      if (
-        destroyerSelect == submarineSelect ||
-        destroyerSelect == carrierSelect ||
-        destroyerSelect == cruiserSelect ||
-        destroyerSelect == battleshipSelect ||
-        destroyerSelect + 20 == carrierSelect ||
-        destroyerSelect + 20 == carrierSelect + 1 ||
-        destroyerSelect + 20 == carrierSelect + 2 ||
-        destroyerSelect + 20 == carrierSelect + 3 ||
-        destroyerSelect + 20 == carrierSelect + 4 ||
-        destroyerSelect + 20 == battleshipSelect ||
-        destroyerSelect + 20 == battleshipSelect + 1 ||
-        destroyerSelect + 20 == battleshipSelect + 2 ||
-        destroyerSelect + 20 == battleshipSelect + 3 ||
-        destroyerSelect + 20 == cruiserSelect ||
-        destroyerSelect + 20 == cruiserSelect + 1 ||
-        destroyerSelect + 20 == cruiserSelect + 2 ||
-        destroyerSelect + 20 == submarineSelect ||
-        destroyerSelect + 20 == submarineSelect + 1 ||
-        destroyerSelect + 20 == submarineSelect + 2
-      ) {
-        destroyerSelect = Math.floor(Math.random() * 89);
+      submarineArr.push(submarineSelect);
+      delete compsChoicesArr[submarineSelect];
+      for (let i = 0; i < 2; i++) {
+        if (result == 0) {
+          let submarineNext = submarineSelect += 10;
+          submarineArr.push(submarineNext);
+          delete compsChoicesArr[submarineNext];
+        } else {
+          let submarineNext = submarineSelect += 1;
+          submarineArr.push(submarineNext);
+          delete compsChoicesArr[submarineNext];
+        }
       }
 
-      let destroyerChoicesVertical = [destroyerSelect, destroyerSelect + 10];
-      let destroyerChoicesHorizontal = [destroyerSelect, destroyerSelect + 1];
+    } else if (i == 4) {
+      var destroyerSelect = Math.floor(Math.random() * 89);
+      while (!compsChoicesArr.includes(destroyerSelect)) {
+        destroyerSelect = Math.floor(Math.random() * 89);
+      }
+      destroyerArr.push(destroyerSelect);
+      delete compsChoicesArr[destroyerSelect];
+      for (let i = 0; i < 1; i++) {
+        if (result == 0) {
+          let destroyerNext = destroyerSelect += 10;
+          destroyerArr.push(destroyerNext);
+          delete compsChoicesArr[destroyerNext];
+        } else {
+          let destroyerNext = submarineSelect += 1;
+          destroyerArr.push(destroyerNext);
+          delete compsChoicesArr[destroyerNext];
+        }
+      }
 
-      var destroyerOrientationArr = [
-        destroyerChoicesHorizontal,
-        destroyerChoicesVertical,
-      ];
     }
   }
 
-  var carrierChoice = carrierOrientationArr[Math.floor(Math.random() * 2)];
-  var battleshipChoice =
-    battleshipOrientationArr[Math.floor(Math.random() * 2)];
-  var cruiserChoice = cruiserOrientationArr[Math.floor(Math.random() * 2)];
-  var submarineChoice = submarineOrientationArr[Math.floor(Math.random() * 2)];
-  var destroyerChoice = destroyerOrientationArr[Math.floor(Math.random() * 2)];
 
+  
+  
   const compCell = document.querySelectorAll(".compCell");
   const compMessage = document.getElementById("compMessage");
   const compArea = document.getElementById("compArea");
@@ -1493,63 +1441,68 @@ const compSelection = () => {
 
   compCell.forEach((element) => {
     element.addEventListener("click", () => {
-      if (carrierChoice.includes(Number(element.classList[0]))) {
-        element.style.backgroundColor = "red";
-        compMessage.textContent = "Boom! You hit their Carrier.";
-        compMessage.style.color = "red";
-        if (!hitArr.includes(element.classList[0])) {
-          hitArr.push(element.classList[0]);
+      if (element.style.backgroundColor =="") {
+        if (carrierArr.includes(Number(element.classList[0]))) {
+          element.style.backgroundColor = "red";
+          compMessage.textContent = "Boom! You hit their Carrier.";
+          compMessage.style.color = "red";
+          if (!hitArr.includes(element.classList[0])) {
+            hitArr.push(element.classList[0]);
+            compMove();
+          }
+          console.log(hitArr);
+        } else if (battleshipArr.includes(Number(element.classList[0]))) {
+          element.style.backgroundColor = "red";
+          compMessage.textContent = "Boom! You hit their Battleship.";
+          compMessage.style.color = "red";
+          if (!hitArr.includes(element.classList[0])) {
+            hitArr.push(element.classList[0]);
+            compMove();
+          }
+          console.log(hitArr);
+        } else if (cruiserArr.includes(Number(element.classList[0]))) {
+          element.style.backgroundColor = "red";
+          compMessage.textContent = "Boom! You hit their Cruiser.";
+          compMessage.style.color = "red";
+          if (!hitArr.includes(element.classList[0])) {
+            hitArr.push(element.classList[0]);
+            compMove();
+          }
+          console.log(hitArr);
+        } else if (submarineArr.includes(Number(element.classList[0]))) {
+          element.style.backgroundColor = "red";
+          compMessage.textContent = "Boom! You hit their Submarine.";
+          compMessage.style.color = "red";
+          if (!hitArr.includes(element.classList[0])) {
+            hitArr.push(element.classList[0]);
+            compMove();
+          }
+          console.log(hitArr);
+        } else if (destroyerArr.includes(Number(element.classList[0]))) {
+          element.style.backgroundColor = "red";
+          compMessage.textContent = "Boom! You hit their Destroyer.";
+          compMessage.style.color = "red";
+          if (!hitArr.includes(element.classList[0])) {
+            hitArr.push(element.classList[0]);
+            compMove();
+          }
+          console.log(hitArr);
+        } else if (
+          !carrierArr.includes(Number(element.classList[0])) ||
+          !battleshipArr.includes(Number(element.classList[0])) ||
+          !cruiserArr.includes(Number(element.classList[0])) ||
+          !submarineArr.includes(Number(element.classList[0])) ||
+          !destroyerArr.includes(Number(element.classList[0]))
+        ) {
+          element.style.backgroundColor = "#8998ac";
+          compMessage.textContent = "You Missed...";
+          compMessage.style.color = "white";
           compMove();
         }
-        console.log(hitArr);
-      } else if (battleshipChoice.includes(Number(element.classList[0]))) {
-        element.style.backgroundColor = "red";
-        compMessage.textContent = "Boom! You hit their Battleship.";
-        compMessage.style.color = "red";
-        if (!hitArr.includes(element.classList[0])) {
-          hitArr.push(element.classList[0]);
-          compMove();
-        }
-        console.log(hitArr);
-      } else if (cruiserChoice.includes(Number(element.classList[0]))) {
-        element.style.backgroundColor = "red";
-        compMessage.textContent = "Boom! You hit their Cruiser.";
-        compMessage.style.color = "red";
-        if (!hitArr.includes(element.classList[0])) {
-          hitArr.push(element.classList[0]);
-          compMove();
-        }
-        console.log(hitArr);
-      } else if (submarineChoice.includes(Number(element.classList[0]))) {
-        element.style.backgroundColor = "red";
-        compMessage.textContent = "Boom! You hit their Submarine.";
-        compMessage.style.color = "red";
-        if (!hitArr.includes(element.classList[0])) {
-          hitArr.push(element.classList[0]);
-          compMove();
-        }
-        console.log(hitArr);
-      } else if (destroyerChoice.includes(Number(element.classList[0]))) {
-        element.style.backgroundColor = "red";
-        compMessage.textContent = "Boom! You hit their Destroyer.";
-        compMessage.style.color = "red";
-        if (!hitArr.includes(element.classList[0])) {
-          hitArr.push(element.classList[0]);
-          compMove();
-        }
-        console.log(hitArr);
-      } else if (
-        !carrierChoice.includes(Number(element.classList[0])) ||
-        !battleshipChoice.includes(Number(element.classList[0])) ||
-        !cruiserChoice.includes(Number(element.classList[0])) ||
-        !submarineChoice.includes(Number(element.classList[0])) ||
-        !destroyerChoice.includes(Number(element.classList[0]))
-      ) {
-        element.style.backgroundColor = "#8998ac";
-        compMessage.textContent = "You Missed...";
-        compMessage.style.color = "white";
-        compMove();
-      }
+
+
+      }  
+
 
       if (hitArr.length == 17) {
         alert("you win");
@@ -1572,26 +1525,49 @@ const compSelection = () => {
         continueBtnClicked = false;
         resetBtn.disabled = true;
         arr = [];
+        compMoveMissArr = [];
+        compMoveHitArr = [];
+        compChoiceArr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+       10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+       20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+       30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+       40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+       50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+       60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+       70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
+       80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+       90, 91, 92, 93, 94, 95, 96, 97, 98, 99]; 
+        carrierArr = []
+        battleshipArr = []
+        cruiserArr = []
+        submarineArr = []
+        destroyerArr = []
+
+        compsChoicesArr = [
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+        10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+        20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+        30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+        40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+        50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+        60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+        70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
+        80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+        90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+      ];
       }
     });
   });
 
-  console.log(carrierChoice);
-  console.log(battleshipChoice);
-  console.log(cruiserChoice);
-  console.log(submarineChoice);
-  console.log(destroyerChoice);
+  console.log(carrierArr)
+  console.log(battleshipArr)
+  console.log(cruiserArr)
+  console.log(submarineArr)
+  console.log(destroyerArr)
 
-
-
-
-
-
-
+  console.log(compsChoicesArr)
 
 };
-
-//figure out how to prevent the computer from placing ships on top of ships
 
 
 function compMove() {
@@ -1653,5 +1629,23 @@ cell.forEach((element)=> {
     70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
     80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
     90, 91, 92, 93, 94, 95, 96, 97, 98, 99]; 
+    carrierArr = []
+    battleshipArr = []
+    cruiserArr = []
+    submarineArr = []
+    destroyerArr = []
+
+    compsChoicesArr = [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+    10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+    20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+    30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+    40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+    50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+    60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+    70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
+    80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+    90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+  ];
    }
 }
