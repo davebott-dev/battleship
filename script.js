@@ -1,3 +1,5 @@
+//original script
+
 const content = document.getElementById("content");
 const grid = document.querySelector(".container");
 

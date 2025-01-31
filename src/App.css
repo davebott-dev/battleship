@@ -2,23 +2,29 @@
   --background: #142d4c;
   --cellColor: #385170;
   --offWhite: #ececec;
+  --hoverColor: #7d8fa5;
 
 }
 
+#root{
+  text-align: center;
+}
 html {
   background: var(--background);
   height: 100%;
   padding: 0;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
 }
-
 h1,
 p {
   font-weight: bolder;
   color: var(--offWhite);
 }
-
-
+.message{
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: var(--offWhite);
+}
 .container,
 #compGB {
   display: grid;
@@ -29,18 +35,23 @@ p {
   margin-bottom: 50px;
   padding: 15px;
 }
-
 .cell,
 .compCell {
   border: 1px solid var(--offWhite);
   background: var(--cellColor);
+  transition: background 0.3s ease-in-out;
 }
-
 .cell:hover,
 .compCell:hover {
-  background: #7d8fa5;
+  background: var(--hoverColor);
 }
 
+.cell.green{
+  background: green;
+}
+.cell.red{
+  background:red;
+}
 body {
   display: flex;
   flex-direction: column;
@@ -58,13 +69,6 @@ body {
   justify-content: center;
   width: 100%;
   height: 100%;
-}
-
-#gameboard {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 
 #gameboardBtns {
@@ -91,14 +95,9 @@ body {
   cursor: pointer;
   ;
 }
-
-
-.highlighted {
-  background: #6483aa;
-}
-
-.disabled {
-  pointer-events: none;
+.btn.selected{
+  background-color: darkblue;
+  color: white;
 }
 
 #compArea {
@@ -108,6 +107,3 @@ body {
   align-items: center;
   margin-bottom: 26px;
 }
-
-
-
