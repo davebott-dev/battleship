@@ -14,6 +14,13 @@ function App() {
     rotate: true,
     continue: true,
   });
+  const [disabledShips, setDisabledShips] = useState({
+    carrier: false,
+    battleship: false,
+    cruiser: false,
+    submarine: false,
+    destroyer: false,
+  });
 
   const ships = {
     carrier: 5,
@@ -78,15 +85,17 @@ function App() {
     let newGrid = [...playerGrid];
     let newPlacedShips = [...placedShips];
 
+    let validPlacement = true;
+    let newShipPositions = [];
+
     if (isRotated) {
       if (index + (shipSize - 1) * 10 < 100) {
         for (let i = 0; i < shipSize; i++) {
-          newGrid[index + i * 10] = selectedShip;
+          if (newGrid[index + i * 10]) validPlacement = false;
+          newShipPositions.push(index + i * 10);
         }
-        newPlacedShips.push({
-          ship: selectedShip,
-          positions: Array.from({ length: shipSize }, (_, i) => index + i * 10),
-        });
+      } else {
+        validPlacement = false;
       }
     } else {
       const rowStart = Math.floor(index / 10) * 10;
@@ -94,17 +103,26 @@ function App() {
 
       if (index + shipSize - 1 < rowEnd) {
         for (let i = 0; i < shipSize; i++) {
-          newGrid[index + i] = selectedShip;
+          if (newGrid[index + i]) validPlacement = false;
+          newShipPositions.push(index + i);
         }
-        newPlacedShips.push({
-          ship: selectedShip,
-          positions: Array.from({ length: shipSize }, (_, i) => index + i),
-        });
+      } else {
+        validPlacement = false;
       }
     }
 
+    if (!validPlacement) return;
+
+    newShipPositions.forEach((pos) => (newGrid[pos] = "highlighted"));
+
+    newPlacedShips.push({ ship: selectedShip, positions: newShipPositions });
+
     setPlayerGrid(newGrid);
     setPlacedShips(newPlacedShips);
+
+    setDisabledShips((prev) => ({ ...prev, [selectedShip]: true }));
+    setIsDisabled((prev) => ({ ...prev, rotate: true }));
+
     setSelectedShip(null);
   };
 
@@ -113,6 +131,13 @@ function App() {
     setPlacedShips([]);
     setSelectedShip(null);
     setIsRotated(false);
+    setDisabledShips({
+      carrier: false,
+      battleship: false,
+      cruiser: false,
+      submarine: false,
+      destroyer: false,
+    });
     setIsDisabled({ reset: true, rotate: true, continue: true });
     if (messageRef.current) {
       messageRef.current.textContent = "Game Reset";
@@ -136,12 +161,13 @@ function App() {
           <div className="container">
             {playerGrid.map((cell, index) => {
               const isHovered = hoveredCells.includes(index);
+              const isPlaced = cell === "highlighted";
 
               return (
                 <div
                   key={index}
                   className={`cell ${
-                    isHovered ? "green" : cell === "invalid" ? "red" : ""
+                    isHovered ? "green" : isPlaced ? "highlighted" : ""
                   }`}
                   onMouseOver={() => handleMouseOver(index)}
                   onMouseOut={handleMouseOut}
@@ -164,7 +190,14 @@ function App() {
               <button
                 key={ship}
                 onClick={() => handleShipSelection(ship)}
-                className={`btn ${selectedShip === ship ? "selected" : ""}`}
+                className={`btn ${
+                  disabledShips[ship]
+                    ? "disabled"
+                    : ship === selectedShip
+                    ? "selected"
+                    : ""
+                }`}
+                disabled={disabledShips[ship]}
               >
                 {ship}
               </button>

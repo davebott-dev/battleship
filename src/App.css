@@ -39,7 +39,6 @@ p {
 .compCell {
   border: 1px solid var(--offWhite);
   background: var(--cellColor);
-  transition: background 0.3s ease-in-out;
 }
 .cell:hover,
 .compCell:hover {
@@ -52,6 +51,12 @@ p {
 .cell.red{
   background:red;
 }
+
+.cell.highlighted{
+  background: darkblue !important;
+  border-color: white;
+}
+
 body {
   display: flex;
   flex-direction: column;
@@ -93,10 +98,22 @@ body {
   width: 120px;
   border-radius: 20px;
   cursor: pointer;
-  ;
+  background:#ececec;
+  transition: 0.2 ease-in-out;
 }
+
+.btn:hover{
+  background: #dcdcdc;
+}
+
+.btn:disabled{
+  background: #7d8fa5;
+  color: #bbb;
+  cursor: not-allowed;
+}
+
 .btn.selected{
-  background-color: darkblue;
+  background: darkblue;
   color: white;
 }
 
