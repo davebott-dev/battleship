@@ -57,6 +57,14 @@ p {
   border-color: white;
 }
 
+.hit { 
+  background: red !important;
+}
+
+.miss {
+  background: #8998ac !important;
+}
+
 body {
   display: flex;
   flex-direction: column;
