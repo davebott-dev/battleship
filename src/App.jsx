@@ -1,7 +1,5 @@
 //refactored into react
-
-//fix issue of computer attacking its own board
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import "./App.css";
 
 function App() {
@@ -13,6 +11,7 @@ function App() {
   const [placedShips, setPlacedShips] = useState([]);
   const [hoveredCells, setHoveredCells] = useState([]);
   const [gameStarted, setGameStarted] = useState(false);
+  const [isCheckingWin, setIsCheckingWin] =useState(false);
   const [isDisabled, setIsDisabled] = useState({
     reset: true,
     rotate: true,
@@ -46,38 +45,10 @@ function App() {
   const [compChoices, setCompChoices] = useState([...Array(100).keys()]);
   const [compHits, setCompHits] = useState([]);
   const [compMisses, setCompMisses] = useState([]);
+  const [playerHits, setPlayerHits] = useState([]);
+  const [playerMisses, setPlayerMisses] = useState([]);
   const [playerTurn, setPlayerTurn] = useState(true);
-
-  useEffect(() => {
-    placeComputerShips();
-  }, []);
-
-  useEffect(() => {
-    if (selectedShip) {
-      setIsDisabled((prev) => ({ ...prev, reset: false, rotate: false }));
-    }
-    if (gameStarted && compRef.current) {
-      compRef.current.textContent = "Choose your target!";
-      compRef.current.style.color = "red";
-    }
-  }, [selectedShip, gameStarted]);
-
-  useEffect(() => {
-    if (placedShips.length == 5) {
-      setIsDisabled((prev) => ({ ...prev, continue: false }));
-    }
-  }, [placedShips.length]);
-
-  const placeComputerShips = () => {
-    let newCompShips = {
-      carrier: placeShip(5),
-      battleship: placeShip(4),
-      cruiser: placeShip(3),
-      submarine: placeShip(3),
-      destroyer: placeShip(2),
-    };
-    setCompShips(newCompShips);
-  };
+  const shipsPlaced = useRef(false);
 
   const placeShip = (size) => {
     let placed = false;
@@ -98,27 +69,86 @@ function App() {
         }
         pos.push(nextPos);
       }
-      if (pos.length == size && pos.every((el) => compChoices.includes(el))) {
-        placed = true;
+
+      if (pos.length === size) {
+        let isValid = true;
+
+        Object.values(compShips).forEach((existingShipPositions) => {
+          if (existingShipPositions.some((existingPos) => pos.includes(existingPos))) {
+            isValid = false;
+          }
+        });
+
+        const adjacentCells = [-1, 1, -10, 10]; 
+        pos.forEach((cell) => {
+          adjacentCells.forEach((delta) => {
+            const adjacentCell = cell + delta;
+            if (adjacentCell >= 0 && adjacentCell < 100 && !pos.includes(adjacentCell)) {
+              if (compChoices.includes(adjacentCell)) {
+                isValid = false; 
+              }
+            }
+          });
+        });
+
+        if (isValid) {
+          placed = true;
+          setCompChoices((prev) => prev.filter((cell) => !pos.includes(cell)));
+          return pos;
+        }
       }
     }
-    setCompChoices((prev) => prev.filter((cell) => !pos.includes(cell)));
-    return pos;
   };
 
-  const handlePlayerAttack = (cell) => {
-    if (!playerTurn) return;
+  const placeComputerShips = useCallback(() => {
+    let newCompShips = {
+      carrier: placeShip(5),
+      battleship: placeShip(4),
+      cruiser: placeShip(3),
+      submarine: placeShip(3),
+      destroyer: placeShip(2),
+    };
+    setCompShips(newCompShips);
+  }, []);
 
+  useEffect(() => {
+    if (!shipsPlaced.current) {
+      placeComputerShips();
+      shipsPlaced.current = true;
+    }
+  }, [placeComputerShips]);
+
+  useEffect(() => {
+    if (selectedShip) {
+      setIsDisabled((prev) => ({ ...prev, reset: false, rotate: false }));
+    }
+    if (gameStarted && compRef.current) {
+      compRef.current.textContent = "Choose your target!";
+      compRef.current.style.color = "red";
+    }
+  }, [selectedShip, gameStarted]);
+
+  useEffect(() => {
+    if (placedShips.length === 5) {
+      setIsDisabled((prev) => ({ ...prev, continue: false }));
+    }
+  }, [placedShips.length]);
+
+  const handlePlayerAttack = (cell) => {
+    if (!playerTurn || compHits.includes(cell) || compMisses.includes(cell)) return;
+  
     let hit = false;
     let updatedShips = { ...compShips };
-
+  
     Object.keys(updatedShips).forEach((ship) => {
       if (updatedShips[ship].includes(cell)) {
         hit = true;
         updatedShips[ship] = updatedShips[ship].filter((pos) => pos !== cell);
       }
     });
-
+  
+    setCompShips(updatedShips);
+  
     if (hit) {
       setCompHits((prev) => [...prev, cell]);
       compRef.current.textContent = "Boom! You hit their ship!";
@@ -128,47 +158,53 @@ function App() {
       compRef.current.textContent = "Miss!";
       compRef.current.style.color = "white";
     }
-
-    setPlayerTurn(false);
-    setTimeout(computerMove, 2000);
-  };
-  const computerMove = () => {
-    if (compChoices.length === 0) return;
   
-    let availableTargets = playerGrid
-      .map((cell, index) => (cell !== "hit" && cell !== "miss" ? index : null))
-      .filter((index) => index !== null);
+    setPlayerTurn(false);
+  
+    setTimeout(() => {
+      if (isCheckingWin) return; 
+      setIsCheckingWin(true);  
+      checkWinCondition();
+      computerMove();
+    }, 1000);
+  };
+
+  const computerMove = () => {
+    if (!playerTurn || !gameStarted) return;
+  
+    let availableTargets = [...Array(100).keys()].filter(
+      (index) => !playerHits.includes(index) && !playerMisses.includes(index)
+    );
   
     if (availableTargets.length === 0) return;
   
     let randomIndex = Math.floor(Math.random() * availableTargets.length);
     let compAttack = availableTargets[randomIndex];
   
-    // Checking if the attack hits a player's ship
     let hit = false;
+    let newPlayerGrid = [...playerGrid];
     placedShips.forEach((ship) => {
       if (ship.positions.includes(compAttack)) {
         hit = true;
+        newPlayerGrid[compAttack] = "hit";
+        setPlayerHits((prev) => [...prev, compAttack]);
       }
     });
   
-    if (hit) {
-      setCompHits((prev) => [...prev, compAttack]);
-      // Mark the attack on the player grid as a hit
-      let newPlayerGrid = [...playerGrid];
-      newPlayerGrid[compAttack] = "hit";  // Mark the player's grid as a hit
-      setPlayerGrid(newPlayerGrid);
-    } else {
-      setCompMisses((prev) => [...prev, compAttack]);
-      // Mark the attack on the player grid as a miss
-      let newPlayerGrid = [...playerGrid];
-      newPlayerGrid[compAttack] = "miss";  // Mark the player's grid as a miss
-      setPlayerGrid(newPlayerGrid);
+    if (!hit) {
+      newPlayerGrid[compAttack] = "miss";
+      setPlayerMisses((prev) => [...prev, compAttack]);
     }
   
-    setPlayerTurn(true);  // It's now the player's turn again
+    setPlayerGrid(newPlayerGrid);
+    setTimeout(() => {
+      if (isCheckingWin) return;
+      setIsCheckingWin(true);
+      setPlayerTurn(true);
+    }, 1000);
   };
-
+  
+  
   const handleShipSelection = (ship) => {
     setSelectedShip(ship);
     if (messageRef.current) {
@@ -259,9 +295,23 @@ function App() {
 
   const resetGame = () => {
     setPlayerGrid(Array(100).fill(null));
+    setCompGrid(Array(100).fill(null));
+    setCompShips({
+      carrier: [],
+      battleship: [],
+      cruiser: [],
+      submarine: [],
+      destroyer: [],
+    });
     setPlacedShips([]);
     setSelectedShip(null);
     setIsRotated(false);
+    setPlayerTurn(true);
+    setCompHits([]);
+    setCompMisses([]);
+    setPlayerHits([]);
+    setPlayerMisses([]);
+    setCompChoices([...Array(100).keys()]);
     setDisabledShips({
       carrier: false,
       battleship: false,
@@ -270,6 +320,9 @@ function App() {
       destroyer: false,
     });
     setIsDisabled({ reset: true, rotate: true, continue: true });
+    setGameStarted(false);
+    placeComputerShips(); 
+  
     if (messageRef.current) {
       messageRef.current.textContent = "Game Reset";
     }
@@ -279,7 +332,7 @@ function App() {
     setIsDisabled((prev) => ({ ...prev, continue: true, reset: true }));
 
     if (messageRef.current) {
-      messageRef.current.textContent = "awaiting...";
+      messageRef.current.textContent = "Awaiting...";
     }
 
     makeCompGrid();
@@ -289,6 +342,34 @@ function App() {
     setCompGrid(Array(100).fill("empty"));
     setGameStarted(true);
   };
+
+  const checkWinCondition = () => {
+    if (isCheckingWin) return;
+  
+    setIsCheckingWin(true);
+  
+    const allPlayerShipsSunk = placedShips.every((ship) =>
+      ship.positions.every((pos) => playerHits.includes(pos))
+    );
+  
+    const allCompShipsSunk = Object.values(compShips).every((shipPositions) =>
+      shipPositions.every((pos) => compHits.includes(pos))
+    );
+  
+    if (allPlayerShipsSunk) {
+      setGameStarted(false);
+      setTimeout(() => alert("Computer Wins! 😢"), 500);
+      resetGame();
+    } else if (allCompShipsSunk) {
+      setGameStarted(false);
+      setTimeout(() => alert("You Win! 🎉"), 500);
+      resetGame();
+    }
+  
+    setIsCheckingWin(false);
+  };
+  
+  
 
   return (
     <div>
@@ -302,12 +383,22 @@ function App() {
             {playerGrid.map((cell, index) => {
               const isHovered = hoveredCells.includes(index);
               const isPlaced = cell === "highlighted";
+              const isHit = playerHits.includes(index) || cell ==="hit";
+              const isMiss = playerMisses.includes(index) || cell ==="miss";
 
               return (
                 <div
                   key={index}
                   className={`cell ${
-                    isHovered ? "green" : isPlaced ? "highlighted" : ""
+                    isHovered
+                      ? "green"
+                      : isPlaced
+                      ? "highlighted"
+                      : isHit
+                      ? "hit"
+                      : isMiss
+                      ? "miss"
+                      : ""
                   }`}
                   onMouseOver={() => handleMouseOver(index)}
                   onMouseOut={handleMouseOut}
